@@ -13,13 +13,15 @@ This tool generates pdfs through intermediary HTML that can be styled with custo
 ## Installation
 
 ```shell
-$ composer global require vectorface/docbuilder
+$ git clone https://github.com/Vectorface/docbuilder.git
+$ cd docbuilder
+$ composer update
 ```
 
 ## Usage
 
 ```shell
-$ docbuilder -h
+$ ./bin/docbuilder -h
 Usage: docbuilder [OPTION]... [INFILE] [OUTFILE]
 Converts Markdown files to pdf.
 Options:
