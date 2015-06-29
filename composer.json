@@ -1,0 +1,27 @@
+{
+    "name": "vectorface/docbuilder",
+    "description": "A Markdown To PDF Documentation Generation Tool",
+    "bin": [
+        "bin/docbuilder"
+    ],
+    "homepage": "https://github.com/Vectorface/docbuilder",
+    "autoload": {
+        "psr-4": {
+            "Vectorface\\DocBuilder\\":"src"
+        }
+    },
+    "require": {
+        "league/commonmark": "^0.9.0",
+        "ulrichsg/getopt-php": "^2.3",
+        "squizlabs/php_codesniffer": "^2.3",
+        "phpunit/phpunit": "^4.7",
+        "mpdf/mpdf": "^6.0"
+    },
+    "authors": [
+        {
+            "name": "Conrad Lukawski",
+            "email": "conrad@vectorface.com",
+            "role": "Developer"
+        }
+    ]
+}

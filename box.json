@@ -1,0 +1,31 @@
+{
+    "chmod": "0755",
+    "directories": [
+        "src"
+    ],
+    "files": [
+        "LICENSE",
+        "defaults/style.css",
+        "vendor/autoload.php"
+    ],
+    "finder": [
+        {
+            "name": "*.php",
+            "exclude": ["Tests"],
+            "in": "vendor"
+        },
+        {
+            "name": "*.ttf",
+            "exclude": ["Tests"],
+            "in": "vendor"
+        },
+        {
+            "name": "*.dat",
+            "exclude": ["Tests"],
+            "in": "vendor"
+        }
+    ],
+    "main": "bin/docbuilder",
+    "output": "docbuilder.phar",
+    "stub": true
+}

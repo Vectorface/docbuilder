@@ -1,0 +1,6 @@
+docbuilder.phar
+composer.lock
+vendor/
+*.md
+*.pdf
+*.html
