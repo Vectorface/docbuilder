@@ -23,6 +23,7 @@ class Builder
         $this->markdown = @file_get_contents($markdown);
         $this->css = @file_get_contents($css);
         $this->filename = $markdown;
+        $this->printhtml = $printhtml;
         $this->output = $output;
 
         if ($this->markdown === false) {
@@ -49,14 +50,16 @@ class Builder
         $html .= $converter->convertToHtml($this->markdown);
         $html .= "</body></html>";
 
-        $filename = getcwd().'/'.preg_replace('/.[^.]*$/', '', $this->output);
-
-        if ($this->puthtml) {
-            file_put_contents($filename.".html", $html);
-        }
-
         $mpdf->WriteHTML($html);
         $mpdf->Output($this->output, 'F');
+
+        if ($this->printhtml) {
+            if ($this->printhtml === '-') {
+                echo $html;
+            } else {
+                file_put_contents($this->printhtml, $html);
+            }
+        }
 
         exit(0);
     }
