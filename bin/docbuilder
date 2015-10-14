@@ -1,7 +1,23 @@
 #!/usr/bin/env php
 <?php
 
-require_once __DIR__.'/../vendor/autoload.php';
+/* Search for possible vendor paths to support direct and composer installs. */
+$paths = [
+    __DIR__ . '/../vendor/autoload.php',
+    __DIR__ . '/../../../autoload.php',
+];
+
+foreach ($paths as $path) {
+    if (file_exists($path)) {
+        require_once $path;
+        break;
+    }
+}
+
+/* Toss out a warning if this is probably going to fail. */
+if (!class_exists('\Vectorface\DocBuilder\BuilderApp', true)) {
+    error_log("Warning: autoload failed. Please ensure you have run composer intall.");
+}
 
 $app = new \Vectorface\DocBuilder\BuilderApp();
 $app->run();
