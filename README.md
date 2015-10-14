@@ -26,7 +26,7 @@ Usage: docbuilder [OPTION]... [INFILE] [OUTFILE]
 Converts Markdown files to pdf.
 Options:
   -c, --css=FILE   provide css file for styling (overrides default styling)
-  -p, --printhtml  output intermediate html file
+  -p, --printhtml  output intermediate html file (accepts optional filename argument)
   -h, --help       display this help and exit
   -v, --version    output version number and exit
 ```
