@@ -33,4 +33,4 @@ Options:
 
 ## Build Phar
 
-A standalone .phar archive can be built with [box](http://box-project.org/ "Box Project").
+A standalone .phar archive can be built with [box](https://github.com/box-project/box2 "Box Project").
