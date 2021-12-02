@@ -1,6 +1,7 @@
 {
     "name": "vectorface/docbuilder",
     "description": "A Markdown To PDF Documentation Generation Tool",
+    "license": "MIT",
     "bin": [
         "bin/docbuilder"
     ],
