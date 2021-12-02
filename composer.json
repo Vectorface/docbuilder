@@ -19,10 +19,7 @@
         "friendsofphp/php-cs-fixer": "^3"
     },
     "authors": [
-        {
-            "name": "Conrad Lukawski",
-            "email": "conrad@vectorface.com",
-            "role": "Developer"
-        }
+        { "name": "Conrad Lukawski", "email": "conrad@vectorface.com", "role": "Alumni" },
+        { "name": "J. Anderson", "role": "Developer" }
     ]
 }
