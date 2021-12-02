@@ -5,7 +5,7 @@ This tool generates pdfs through intermediary HTML that can be styled with custo
 
 ## Requirements
 
-* PHP >= 5.4
+* PHP >= 7.4
 * mbstring
 * gd (for image support)
 * zlib
