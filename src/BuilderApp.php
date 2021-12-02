@@ -13,6 +13,7 @@ use Vectorface\DocBuilder\Builder;
  */
 class BuilderApp
 {
+    public const VERSION = '2.0.0';
     /**
      * Function processes arguments and runs the builder (or exits)
      * from the provided data.
@@ -25,20 +26,20 @@ class BuilderApp
                 new Option('p', 'printhtml', GetOpt::OPTIONAL_ARGUMENT),
                 new Option('h', 'help'),
                 new Option('v', 'version'),
-            ])->addOperands([
-                Operand::create('input', Operand::REQUIRED),
-                Operand::create('output', Operand::OPTIONAL),
-            ]);
+        ])
+        ->addOperand(Operand::create('input', Operand::OPTIONAL))
+        ->addOperand(Operand::create('output', Operand::OPTIONAL));
 
         /* Get option values */
         try {
             $getopt->process();
             if ($getopt['version']) {
-                echo "docbuilder v1.0.0\n";
+                echo "docbuilder v" . self::VERSION . "\n";
                 exit(0);
             }
 
             if ($getopt['help']) {
+                echo "\ndocbuilder: Convert Markdown files to pdf.\n\n";
                 echo $getopt->getHelpText();
                 exit(0);
             }
@@ -77,22 +78,5 @@ class BuilderApp
             echo "docbuilder: ".$e->getMessage()."\n";
             exit(1);
         }
-    }
-
-    /**
-     * Helper function that shows tool usage and exits with the provided code
-     * @param $code int return code for showUsage() to exit with
-     */
-    private function showUsage($code)
-    {
-        echo "Usage: docbuilder [OPTION]... [INFILE] [OUTFILE]\n";
-        echo "Converts Markdown files to pdf.\n\n";
-        echo "Options:\n";
-        echo "  -c, --css=FILE   provide css file for styling (overrides default styling)\n";
-        echo "  -p, --printhtml  output intermediate html file (accepts optional filename argument)\n";
-        echo "  -h, --help       display this help and exit\n";
-        echo "  -v, --version    output version number and exit\n";
-
-        exit($code);
     }
 }
