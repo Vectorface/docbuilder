@@ -2,7 +2,7 @@
 
 namespace Vectorface\DocBuilder;
 
-use \mPDF;
+use Mpdf\Mpdf;
 use League\CommonMark\CommonMarkConverter;
 use Vectorface\DocBuilder\BuilderStyle;
 
@@ -44,7 +44,7 @@ class Builder
     public function buildPDF()
     {
         $converter = new CommonMarkConverter();
-        $mpdf = new mPDF();
+        $mpdf = new Mpdf();
 
         $html = "<!doctype html><html><head><style>".$this->css."</style></head><body>";
         $html .= $converter->convertToHtml($this->markdown);

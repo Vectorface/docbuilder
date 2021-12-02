@@ -2,8 +2,9 @@
 
 namespace Vectorface\DocBuilder;
 
-use Ulrichsg\Getopt\Getopt;
-use Ulrichsg\Getopt\Option;
+use GetOpt\GetOpt;
+use GetOpt\Option;
+use GetOpt\Operand;
 use Vectorface\DocBuilder\Builder;
 
 /**
@@ -18,24 +19,28 @@ class BuilderApp
      */
     public function run()
     {
-        $getopt = new Getopt(array(
-            new Option('c', 'css', Getopt::REQUIRED_ARGUMENT),
-            new Option('p', 'printhtml', Getopt::OPTIONAL_ARGUMENT),
-            new Option('h', 'help'),
-            new Option('v', 'version')
-        ));
+        $getopt = (new GetOpt())
+            ->addOptions([
+                new Option('c', 'css', GetOpt::REQUIRED_ARGUMENT),
+                new Option('p', 'printhtml', GetOpt::OPTIONAL_ARGUMENT),
+                new Option('h', 'help'),
+                new Option('v', 'version'),
+            ])->addOperands([
+                Operand::create('input', Operand::REQUIRED),
+                Operand::create('output', Operand::OPTIONAL),
+            ]);
 
         /* Get option values */
         try {
-            $getopt->parse();
-
+            $getopt->process();
             if ($getopt['version']) {
                 echo "docbuilder v1.0.0\n";
                 exit(0);
             }
 
             if ($getopt['help']) {
-                $this->showUsage(0);
+                echo $getopt->getHelpText();
+                exit(0);
             }
 
             if ($getopt['css']) {
@@ -45,15 +50,14 @@ class BuilderApp
                 $css = __DIR__.'/../defaults/style.css';
             }
 
-            $markdown = $getopt->getOperand(0);
-
+            $markdown = $getopt->getOperand('input');
             if (empty($markdown)) {
                 echo "docbuilder: no markdown file provided\n\n";
-                $this->showUsage(1);
+                echo $getopt->getHelpText();
+                exit(1);
             }
 
-            $output = $getopt->getOperand(1);
-
+            $output = $getopt->getOperand('output');
             if (empty($output)) {
                 $output = getcwd().'/'.preg_replace('/.[^.]*$/', '', $markdown).".pdf";
             }
