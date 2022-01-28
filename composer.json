@@ -13,6 +13,7 @@
     },
     "require": {
         "league/commonmark": "^2",
+        "spatie/commonmark-highlighter": "^3.0",
         "ulrichsg/getopt-php": "^4",
         "mpdf/mpdf": "^8"
     },

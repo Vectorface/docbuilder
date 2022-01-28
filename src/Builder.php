@@ -6,6 +6,14 @@ use Mpdf\Mpdf;
 use League\CommonMark\CommonMarkConverter;
 use Vectorface\DocBuilder\BuilderStyle;
 
+use League\CommonMark\Environment\Environment;
+use League\CommonMark\Extension\CommonMark\CommonMarkCoreExtension;
+use League\CommonMark\Extension\CommonMark\Node\Block\FencedCode;
+use League\CommonMark\Extension\CommonMark\Node\Block\IndentedCode;
+use League\CommonMark\MarkdownConverter;
+use Spatie\CommonMarkHighlighter\FencedCodeRenderer;
+use Spatie\CommonMarkHighlighter\IndentedCodeRenderer;
+
 /**
  * Class Builder
  * Contains MD -> PDF conversion and user provided data
@@ -43,7 +51,12 @@ class Builder
      */
     public function buildPDF()
     {
-        $converter = new CommonMarkConverter();
+        $environment = new Environment();
+        $environment->addExtension(new CommonMarkCoreExtension());
+        $environment->addRenderer(FencedCode::class, new FencedCodeRenderer());
+        $environment->addRenderer(IndentedCode::class, new IndentedCodeRenderer());
+
+        $converter = new MarkdownConverter($environment);
         $mpdf = new Mpdf();
 
         $html = "<!doctype html><html><head><style>".$this->css."</style></head><body>";
