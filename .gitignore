@@ -5,3 +5,4 @@ vendor/
 *.pdf
 *.html
 !README.md
+/.php-cs-fixer.cache

@@ -15,6 +15,7 @@ use League\CommonMark\Extension\TableOfContents\TableOfContentsExtension;
 use League\CommonMark\MarkdownConverter;
 use Spatie\CommonMarkHighlighter\FencedCodeRenderer;
 use Spatie\CommonMarkHighlighter\IndentedCodeRenderer;
+use Vectorface\DocBuilder\CommonMark\PreprocessorExtension;
 
 /**
  * Class Builder
@@ -30,6 +31,9 @@ class Builder
 
     /** @var bool */
     private $toc = false;
+
+    private $header;
+    private $footer;
 
     public function __construct($markdown, $css, $printhtml, $output)
     {
@@ -56,9 +60,21 @@ class Builder
      * @param bool $toc
      * @return self
      */
-    public function generateTOC(bool $toc = true)
+    public function generateTOC(bool $toc = true): self
     {
         $this->toc = $toc;
+        return $this;
+    }
+
+    public function withHeader(?string $header): self
+    {
+        $this->header = $header;
+        return $this;
+    }
+
+    public function withFooter(?string $footer): self
+    {
+        $this->footer = $footer;
         return $this;
     }
 
@@ -70,6 +86,7 @@ class Builder
     {
         $environment = new Environment();
         $environment->addExtension(new CommonMarkCoreExtension());
+        $environment->addExtension(new PreprocessorExtension());
         if ($this->toc) {
             $environment->addExtension(new HeadingPermalinkExtension());
             $environment->addExtension(new TableOfContentsExtension());
@@ -85,6 +102,12 @@ class Builder
         $html .= "</body></html>";
 
         $mpdf->WriteHTML($html);
+        if ($this->header) {
+            $mpdf->SetHTMLHeader(@file_get_contents($this->header));
+        }
+        if ($this->footer) {
+            $mpdf->SetHTMLFooter(@file_get_contents($this->footer));
+        }
         $mpdf->Output($this->output, 'F');
 
         if ($this->printhtml) {
