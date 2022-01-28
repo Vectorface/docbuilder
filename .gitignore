@@ -6,3 +6,4 @@ vendor/
 *.html
 !README.md
 /.php-cs-fixer.cache
+/.idea
