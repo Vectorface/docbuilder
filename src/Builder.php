@@ -10,6 +10,8 @@ use League\CommonMark\Environment\Environment;
 use League\CommonMark\Extension\CommonMark\CommonMarkCoreExtension;
 use League\CommonMark\Extension\CommonMark\Node\Block\FencedCode;
 use League\CommonMark\Extension\CommonMark\Node\Block\IndentedCode;
+use League\CommonMark\Extension\HeadingPermalink\HeadingPermalinkExtension;
+use League\CommonMark\Extension\TableOfContents\TableOfContentsExtension;
 use League\CommonMark\MarkdownConverter;
 use Spatie\CommonMarkHighlighter\FencedCodeRenderer;
 use Spatie\CommonMarkHighlighter\IndentedCodeRenderer;
@@ -25,6 +27,9 @@ class Builder
     private $filename;
     private $printhtml;
     private $output;
+
+    /** @var bool */
+    private $toc = false;
 
     public function __construct($markdown, $css, $printhtml, $output)
     {
@@ -46,6 +51,18 @@ class Builder
     }
 
     /**
+     * Tell the underlying Markdown converter to generate a Table of Contents
+     *
+     * @param bool $toc
+     * @return self
+     */
+    public function generateTOC(bool $toc = true)
+    {
+        $this->toc = $toc;
+        return $this;
+    }
+
+    /**
      * Build the PDF from the user provided data.
      * Exists with status 0 upon completion.
      */
@@ -53,6 +70,10 @@ class Builder
     {
         $environment = new Environment();
         $environment->addExtension(new CommonMarkCoreExtension());
+        if ($this->toc) {
+            $environment->addExtension(new HeadingPermalinkExtension());
+            $environment->addExtension(new TableOfContentsExtension());
+        }
         $environment->addRenderer(FencedCode::class, new FencedCodeRenderer());
         $environment->addRenderer(IndentedCode::class, new IndentedCodeRenderer());
 
