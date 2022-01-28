@@ -23,30 +23,35 @@ use Vectorface\DocBuilder\CommonMark\PreprocessorExtension;
  */
 class Builder
 {
+    /** @var string */
     private $css;
-    private $filename;
+
     private $printhtml;
-    private $output;
 
     /** @var bool */
     private $toc = false;
 
-    private $content;
-    private $header;
-    private $footer;
+    /** @var string */
+    private $content = '';
+
+    /** @var string */
+    private $header = '';
+
+    /** @var string */
+    private $footer = '';
+
+    /** @var string */
+    private $prepend = '';
+
+    /** @var string */
+    private $append = '';
 
     /** @var MarkdownConverter */
     private $converter;
 
-    public function __construct($printhtml, $output)
+    public function __construct($printhtml)
     {
         $this->printhtml = $printhtml;
-        $this->output = $output;
-
-        if ($this->css === false) {
-            echo "docbuilder: css file does not exist: ".$css."\n";
-            exit(1);
-        }
     }
 
     /**
@@ -67,7 +72,7 @@ class Builder
      * @param string $cssURI
      * @return $this
      */
-    public function withCSS(string $cssURI)
+    public function withCSS(string $cssURI): self
     {
         $this->css = $cssURI ? $this->fetch($cssURI) : '';
         return $this;
@@ -78,7 +83,7 @@ class Builder
      * @param string $content
      * @return $this
      */
-    public function withContent(string $contentURI)
+    public function withContent(string $contentURI): self
     {
         $this->content = $contentURI ? $this->fetch($contentURI) : '';
         return $this;
@@ -109,10 +114,28 @@ class Builder
     }
 
     /**
+     * Prepend content from the given URI (e.g. a title page)
+     *
+     * @param string|null $prependURI
+     * @return $this
+     */
+    public function prepend(?string $prependURI): self
+    {
+        $this->prepend = $prependURI ? $this->fetch($prependURI) : '';
+        return $this;
+    }
+
+    public function append(?string $appendURI): self
+    {
+        $this->append = $appendURI ? $this->fetch($appendURI) : '';
+        return $this;
+    }
+
+    /**
      * Build the PDF from the user provided data.
      * Exists with status 0 upon completion.
      */
-    public function buildPDF()
+    public function outputPDF($output)
     {
         $mpdf = new Mpdf();
 
@@ -124,11 +147,11 @@ class Builder
         }
 
         $html = "<!doctype html><html><head><style>".$this->css."</style></head><body>";
-        $html .= $this->content;
+        $html .= $this->prepend . $this->content . $this->append;
         $html .= "</body></html>";
 
         $mpdf->WriteHTML($html);
-        $mpdf->Output($this->output, 'F');
+        $mpdf->Output($output, 'F');
 
         if ($this->printhtml) {
             if ($this->printhtml === '-') {

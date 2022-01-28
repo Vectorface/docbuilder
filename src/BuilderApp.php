@@ -29,6 +29,8 @@ class BuilderApp
                 new Option('v', 'version'),
                 new Option(null, 'header', GetOpt::REQUIRED_ARGUMENT),
                 new Option(null, 'footer', GetOpt::REQUIRED_ARGUMENT),
+                new Option(null, 'prepend', GetOpt::REQUIRED_ARGUMENT),
+                new Option(null, 'append', GetOpt::REQUIRED_ARGUMENT),
         ])
         ->addOperand(Operand::create('input', Operand::OPTIONAL))
         ->addOperand(Operand::create('output', Operand::OPTIONAL));
@@ -75,13 +77,15 @@ class BuilderApp
             }
 
             /* Run the builder tool */
-            $builder = (new Builder($printhtml, $output))
+            $builder = (new Builder($printhtml))
                 ->withContent($input)
                 ->withCSS($css)
                 ->generateTOC((bool)$getopt['toc'])
+                ->prepend($getopt['prepend'])
+                ->append($getopt['append'])
                 ->withPageHeaders($getopt['header'])
                 ->withPageFooters($getopt['footer']);
-            $builder->buildPDF();
+            $builder->outputPDF($output);
         } catch (\Exception $e) {
             echo "docbuilder: ".$e->getMessage()."\n";
             exit(1);
