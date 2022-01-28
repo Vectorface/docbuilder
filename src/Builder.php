@@ -35,6 +35,9 @@ class Builder
     private $header;
     private $footer;
 
+    /** @var MarkdownConverter */
+    private $converter;
+
     public function __construct($markdown, $css, $printhtml, $output)
     {
         $this->markdown = @file_get_contents($markdown);
@@ -66,6 +69,11 @@ class Builder
         return $this;
     }
 
+    /**
+     *
+     * @param string|null $header
+     * @return $this
+     */
     public function withHeader(?string $header): self
     {
         $this->header = $header;
@@ -84,30 +92,20 @@ class Builder
      */
     public function buildPDF()
     {
-        $environment = new Environment();
-        $environment->addExtension(new CommonMarkCoreExtension());
-        $environment->addExtension(new PreprocessorExtension());
-        if ($this->toc) {
-            $environment->addExtension(new HeadingPermalinkExtension());
-            $environment->addExtension(new TableOfContentsExtension());
-        }
-        $environment->addRenderer(FencedCode::class, new FencedCodeRenderer());
-        $environment->addRenderer(IndentedCode::class, new IndentedCodeRenderer());
-
-        $converter = new MarkdownConverter($environment);
         $mpdf = new Mpdf();
 
-        $html = "<!doctype html><html><head><style>".$this->css."</style></head><body>";
-        $html .= $converter->convertToHtml($this->markdown);
-        $html .= "</body></html>";
-
-        $mpdf->WriteHTML($html);
         if ($this->header) {
             $mpdf->SetHTMLHeader(@file_get_contents($this->header));
         }
         if ($this->footer) {
             $mpdf->SetHTMLFooter(@file_get_contents($this->footer));
         }
+
+        $html = "<!doctype html><html><head><style>".$this->css."</style></head><body>";
+        $html .= $this->convert($this->markdown);
+        $html .= "</body></html>";
+
+        $mpdf->WriteHTML($html);
         $mpdf->Output($this->output, 'F');
 
         if ($this->printhtml) {
@@ -119,5 +117,24 @@ class Builder
         }
 
         exit(0);
+    }
+
+    private function convert(string $markdown): string
+    {
+        if (!isset($this->converter)) {
+            $environment = new Environment();
+            $environment->addExtension(new CommonMarkCoreExtension());
+            $environment->addExtension(new PreprocessorExtension());
+            if ($this->toc) {
+                $environment->addExtension(new HeadingPermalinkExtension());
+                $environment->addExtension(new TableOfContentsExtension());
+            }
+            $environment->addRenderer(FencedCode::class, new FencedCodeRenderer());
+            $environment->addRenderer(IndentedCode::class, new IndentedCodeRenderer());
+
+            $this->converter = new MarkdownConverter($environment);
+        }
+
+        return $this->converter->convert($markdown);
     }
 }
