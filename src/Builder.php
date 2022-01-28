@@ -23,7 +23,6 @@ use Vectorface\DocBuilder\CommonMark\PreprocessorExtension;
  */
 class Builder
 {
-    private $markdown;
     private $css;
     private $filename;
     private $printhtml;
@@ -32,24 +31,17 @@ class Builder
     /** @var bool */
     private $toc = false;
 
+    private $content;
     private $header;
     private $footer;
 
     /** @var MarkdownConverter */
     private $converter;
 
-    public function __construct($markdown, $css, $printhtml, $output)
+    public function __construct($printhtml, $output)
     {
-        $this->markdown = @file_get_contents($markdown);
-        $this->css = @file_get_contents($css);
-        $this->filename = $markdown;
         $this->printhtml = $printhtml;
         $this->output = $output;
-
-        if ($this->markdown === false) {
-            echo "docbuilder: markdown file does not exist: ".$markdown."\n";
-            exit(1);
-        }
 
         if ($this->css === false) {
             echo "docbuilder: css file does not exist: ".$css."\n";
@@ -70,19 +62,49 @@ class Builder
     }
 
     /**
+     * Retrieve CSS stylesheet from the given URI
+     * s
+     * @param string $cssURI
+     * @return $this
+     */
+    public function withCSS(string $cssURI)
+    {
+        $this->css = $cssURI ? $this->fetch($cssURI) : '';
+        return $this;
+    }
+
+    /**
+     * Retrieve content from the given URI
+     * @param string $content
+     * @return $this
+     */
+    public function withContent(string $contentURI)
+    {
+        $this->content = $contentURI ? $this->fetch($contentURI) : '';
+        return $this;
+    }
+
+    /**
+     * Retrieve page header content from the given URI
      *
      * @param string|null $header
      * @return $this
      */
-    public function withHeader(?string $header): self
+    public function withPageHeaders(?string $headerURI): self
     {
-        $this->header = $header;
+        $this->header = $headerURI ? $this->fetch($headerURI) : '';
         return $this;
     }
 
-    public function withFooter(?string $footer): self
+    /**
+     * Retrieve page footer content from the given URI
+     *
+     * @param string|null $footer
+     * @return $this
+     */
+    public function withPageFooters(?string $footerURI): self
     {
-        $this->footer = $footer;
+        $this->footer = $footerURI ? $this->fetch($footerURI) : '';
         return $this;
     }
 
@@ -95,14 +117,14 @@ class Builder
         $mpdf = new Mpdf();
 
         if ($this->header) {
-            $mpdf->SetHTMLHeader(@file_get_contents($this->header));
+            $mpdf->SetHTMLHeader($this->header);
         }
         if ($this->footer) {
-            $mpdf->SetHTMLFooter(@file_get_contents($this->footer));
+            $mpdf->SetHTMLFooter($this->footer);
         }
 
         $html = "<!doctype html><html><head><style>".$this->css."</style></head><body>";
-        $html .= $this->convert($this->markdown);
+        $html .= $this->content;
         $html .= "</body></html>";
 
         $mpdf->WriteHTML($html);
@@ -117,6 +139,18 @@ class Builder
         }
 
         exit(0);
+    }
+
+    private function fetch($uri)
+    {
+        var_dump("Fetching ", $uri);
+        $content = @file_get_contents($uri);
+
+        if (strtolower(substr($uri, -3)) === '.md') {
+            $content = $this->convert($content);
+        }
+
+        return $content;
     }
 
     private function convert(string $markdown): string

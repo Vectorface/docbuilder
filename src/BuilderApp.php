@@ -54,8 +54,8 @@ class BuilderApp
                 $css = __DIR__.'/../defaults/style.css';
             }
 
-            $markdown = $getopt->getOperand('input');
-            if (empty($markdown)) {
+            $input = $getopt->getOperand('input');
+            if (empty($input)) {
                 echo "docbuilder: no markdown file provided\n\n";
                 echo $getopt->getHelpText();
                 exit(1);
@@ -63,7 +63,7 @@ class BuilderApp
 
             $output = $getopt->getOperand('output');
             if (empty($output)) {
-                $output = getcwd().'/'.preg_replace('/.[^.]*$/', '', $markdown).".pdf";
+                $output = getcwd().'/'.preg_replace('/.[^.]*$/', '', $input).".pdf";
             }
 
             if ($getopt['printhtml'] === 1) {
@@ -75,10 +75,12 @@ class BuilderApp
             }
 
             /* Run the builder tool */
-            $builder = (new Builder($markdown, $css, $printhtml, $output))
+            $builder = (new Builder($printhtml, $output))
+                ->withContent($input)
+                ->withCSS($css)
                 ->generateTOC((bool)$getopt['toc'])
-                ->withHeader($getopt['header'])
-                ->withFooter($getopt['footer']);
+                ->withPageHeaders($getopt['header'])
+                ->withPageFooters($getopt['footer']);
             $builder->buildPDF();
         } catch (\Exception $e) {
             echo "docbuilder: ".$e->getMessage()."\n";
