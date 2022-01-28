@@ -348,7 +348,8 @@ template {
   display: none;
 }
 body {
-	font-family: sans-serif;
+	font-family: "Avant Garde", sans-serif;
+	color: #222;
 }
 
 pre {

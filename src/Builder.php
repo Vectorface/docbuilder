@@ -138,22 +138,21 @@ class Builder
     public function outputPDF($output)
     {
         $mpdf = new Mpdf();
-
+        $mpdf->WriteHTML("<!doctype html><html><head><style>".$this->css."</style></head><body>");
+        $mpdf->WriteHTML($this->prepend);
         if ($this->header) {
             $mpdf->SetHTMLHeader($this->header);
         }
         if ($this->footer) {
             $mpdf->SetHTMLFooter($this->footer);
         }
-
-        $html = "<!doctype html><html><head><style>".$this->css."</style></head><body>";
-        $html .= $this->prepend . $this->content . $this->append;
-        $html .= "</body></html>";
-
-        $mpdf->WriteHTML($html);
+        $mpdf->WriteHTML($this->content);
+        $mpdf->WriteHTML($this->append);
+        $mpdf->WriteHTML("</body></html>");
         $mpdf->Output($output, 'F');
 
         if ($this->printhtml) {
+            $html = "<!doctype html><html><head><style>{$this->css}</style></head><body>{$this->header}{$this->content}{$this->footer}</body></html>";
             if ($this->printhtml === '-') {
                 echo $html;
             } else {
