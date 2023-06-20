@@ -165,7 +165,6 @@ class Builder
 
     private function fetch($uri)
     {
-        var_dump("Fetching ", $uri);
         $content = @file_get_contents($uri);
 
         if (strtolower(substr($uri, -3)) === '.md') {
