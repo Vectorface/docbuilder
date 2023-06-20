@@ -13,8 +13,14 @@ use League\CommonMark\Parser\Cursor;
  */
 class Preprocessor
 {
-    const REGEX_INCLUDE = '/^!INCLUDE\s+".*"(\s+[\w\d,\s]+)?$/im';
-    const REGEX_HEADER = '/^#/m';
+    /**
+     * Map of directive handler to their regex matcher
+     */
+    public const REGEX_DIRECTIVE = [
+        'variableHandler' => '/!VARIABLE\((\w[\w\d]*)\)/im',
+        'includeHandler'  => '/^!INCLUDE\s+".*"(\s+[\w\d,\s]+)?$/im',
+    ];
+    public const REGEX_HEADER = '/^#/m';
 
     /**
      * Run the preprocessor, and return the result
@@ -24,6 +30,10 @@ class Preprocessor
      */
     public function __invoke(string $markdown): string
     {
+        foreach (self::REGEX_DIRECTIVE as $handler => $regex) {
+            $markdown = $this->handleDirective($markdown, $regex, fn (string $directive) => [$this, $handler]($directive));
+        }
+        return $markdown;
         $cursor = new Cursor($markdown);
 
         $preparsed = $cursor->getPreviousText();
@@ -38,7 +48,49 @@ class Preprocessor
         }
         $preparsed .= $cursor->getRemainder();
 
-       return $preparsed;
+        return $preparsed;
+    }
+
+    /**
+     * Handle a given preprocessor directive in a markdown file
+     */
+    private function handleDirective(string $markdown, string $regex, callable $handler): string
+    {
+        $cursor = new Cursor($markdown);
+        $preparsed = $cursor->getPreviousText();
+        while ($directive = $cursor->match($regex)) {
+            $preparsed .= mb_substr($cursor->getPreviousText(), 0, -mb_strlen($directive, 'UTF-8'));
+            $preparsed .= $handler($directive);
+        }
+        $preparsed .= $cursor->getRemainder();
+
+        return $preparsed;
+
+    }
+
+    /**
+     * Handle an !include "file" [indent] directive
+     *
+     * @param string $include The raw include directive, as parsed by its regex.
+     * @return string The processed include
+     */
+    private function includeHandler(string $include): string
+    {
+        $quotes = [mb_strpos($include, '"'), mb_strrpos($include, '"')];
+        $args = array_map('trim', explode(",", mb_substr($include, $quotes[1] + 1)));
+        return $this->fetch(mb_substr($include, $quote[0] + 1, $quote[1] - $quote[0] - 1), $args);
+    }
+
+    /**
+     * Handle a !variable(varName123) directive
+     *
+     * @param string $variable The raw variable directive, as parsed by its regex.
+     * @return string The processed variable
+     */
+    private function variableHandler(string $variable): string
+    {
+        $var = mb_substr($variable, mb_strpos($variable, '(') + 1, -1);
+        return $_ENV[$var] ?? getenv($var) ?? '';
     }
 
     /**
