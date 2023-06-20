@@ -34,21 +34,6 @@ class Preprocessor
             $markdown = $this->handleDirective($markdown, $regex, fn (string $directive) => [$this, $handler]($directive));
         }
         return $markdown;
-        $cursor = new Cursor($markdown);
-
-        $preparsed = $cursor->getPreviousText();
-        while ($include = $cursor->match(self::REGEX_INCLUDE)) {
-            $matchLen = mb_strlen($include, 'UTF-8');
-            $preparsed .= mb_substr($cursor->getPreviousText(), 0, -$matchLen);
-
-            $quote1 = mb_strpos($include, '"');
-            $quote2 = mb_strrpos($include, '"');
-            $args = array_map('trim', explode(",", mb_substr($include, $quote2 + 1)));
-            $preparsed .= $this->fetch(mb_substr($include, $quote1 + 1, $quote2 - $quote1 - 1), $args);
-        }
-        $preparsed .= $cursor->getRemainder();
-
-        return $preparsed;
     }
 
     /**
