@@ -4,11 +4,24 @@ body {
 }
 
 pre {
-    border: 1px solid #ddd;
-    padding: 16px;
+    border: 0.1rem solid #ddd;
+    padding: 0.5rem;
     background-color: #fafafa;
 }
 
-dl > dt {
-    font-weight: 900;
+strong, b, dt {
+    font-weight: bold;
+}
+
+li {
+    padding: 0.1rem;
+}
+
+dd {
+    margin: 0.2rem 0 0.6rem 1.5rem;
+}
+
+code {
+    font-size: 0.9em;
+    margin-right: 0.2rem;
 }
