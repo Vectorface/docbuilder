@@ -1,10 +1,14 @@
 body {
-	font-family: "Avant Garde", sans-serif;
-	color: #222;
+    font-family: "Avant Garde", sans-serif;
+    color: #222;
 }
 
 pre {
-	border: 1px solid #ddd;
-	padding: 16px;
-	background-color: #fafafa;
+    border: 1px solid #ddd;
+    padding: 16px;
+    background-color: #fafafa;
+}
+
+dl > dt {
+    font-weight: 900;
 }
