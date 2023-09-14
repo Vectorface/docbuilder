@@ -68,7 +68,7 @@ class Builder
 
     /**
      * Retrieve CSS stylesheet from the given URI
-     * s
+     *
      * @param string $cssURI
      * @return $this
      */
@@ -80,6 +80,7 @@ class Builder
 
     /**
      * Retrieve content from the given URI
+     *
      * @param string $content
      * @return $this
      */

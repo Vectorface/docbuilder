@@ -9,11 +9,13 @@ use Vectorface\DocBuilder\Builder;
 
 /**
  * Class BuilderApp
- * Contains runtime functions for the builder tool0
+ *
+ * Contains runtime functions for the builder tool
  */
 class BuilderApp
 {
-    public const VERSION = '2.0.0';
+    public const VERSION = '3.0.0';
+
     /**
      * Function processes arguments and runs the builder (or exits)
      * from the provided data.
@@ -49,13 +51,6 @@ class BuilderApp
                 exit(0);
             }
 
-            if ($getopt['css']) {
-                $css = $getopt['css'];
-            } else {
-                /* Use default styling */
-                $css = __DIR__.'/../defaults/style.css';
-            }
-
             $input = $getopt->getOperand('input');
             if (empty($input)) {
                 echo "docbuilder: no markdown file provided\n\n";
@@ -65,7 +60,7 @@ class BuilderApp
 
             $output = $getopt->getOperand('output');
             if (empty($output)) {
-                $output = getcwd().'/'.preg_replace('/.[^.]*$/', '', $input).".pdf";
+                $output = getcwd() . '/' . preg_replace('/.[^.]*$/', '', $input) . ".pdf";
             }
 
             if ($getopt['printhtml'] === 1) {
@@ -79,7 +74,7 @@ class BuilderApp
             /* Run the builder tool */
             $builder = (new Builder($printhtml))
                 ->withContent($input)
-                ->withCSS($css)
+                ->withCSS($getopt['css'] ?: (__DIR__ . '/../defaults/style.css'))
                 ->generateTOC((bool)$getopt['toc'])
                 ->prepend($getopt['prepend'])
                 ->append($getopt['append'])
@@ -87,7 +82,7 @@ class BuilderApp
                 ->withPageFooters($getopt['footer']);
             $builder->outputPDF($output);
         } catch (\Exception $e) {
-            echo "docbuilder: ".$e->getMessage()."\n";
+            echo "docbuilder: {$e->getMessage()}\n";
             exit(1);
         }
     }
