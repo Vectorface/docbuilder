@@ -73,13 +73,13 @@ class BuilderApp
 
             /* Run the builder tool */
             $builder = (new Builder($printhtml))
-                ->withContent($input)
-                ->withCSS($getopt['css'] ?: (__DIR__ . '/../defaults/style.css'))
                 ->generateTOC((bool)$getopt['toc'])
-                ->prepend($getopt['prepend'])
-                ->append($getopt['append'])
+                ->withCSS($getopt['css'] ?: (__DIR__ . '/../defaults/style.css'))
                 ->withPageHeaders($getopt['header'])
-                ->withPageFooters($getopt['footer']);
+                ->withPageFooters($getopt['footer'])
+                ->prepend($getopt['prepend'])
+                ->content($input)
+                ->append($getopt['append']);
             $builder->outputPDF($output);
         } catch (\Exception $e) {
             echo "docbuilder: {$e->getMessage()}\n";

@@ -79,18 +79,6 @@ class Builder
     }
 
     /**
-     * Retrieve content from the given URI
-     *
-     * @param string $content
-     * @return $this
-     */
-    public function withContent(string $contentURI): self
-    {
-        $this->content = $contentURI ? $this->fetch($contentURI) : '';
-        return $this;
-    }
-
-    /**
      * Retrieve page header content from the given URI
      *
      * @param string|null $header
@@ -113,6 +101,19 @@ class Builder
         $this->footer = $footerURI ? $this->fetch($footerURI) : '';
         return $this;
     }
+
+    /**
+     * Retrieve content from the given URI
+     *
+     * @param string $content
+     * @return $this
+     */
+    public function content(string $contentURI): self
+    {
+        $this->content = $contentURI ? $this->fetch($contentURI) : '';
+        return $this;
+    }
+
 
     /**
      * Prepend content from the given URI (e.g. a title page)
@@ -178,7 +179,22 @@ class Builder
     private function convert(string $markdown): string
     {
         if (!isset($this->converter)) {
-            $environment = new Environment();
+            $extensions = [
+                new CommonMarkCoreExtension(),
+                new PreprocessorExtension(),
+            ];
+            $config = [];
+
+            if ($this->toc) {
+                $extensions[] = new HeadingPermalinkExtension();
+                $extensions[] = new TableOfContentsExtension();
+                $config['table_of_contents'] = [
+                    'position'    => 'placeholder',
+                    'placeholder' => '!TOC', // matches style of !VARIABLE and !INCLUDE
+                ];
+                $config['heading_permalink'] = ['symbol' => '​']; // Zero-width space; don't show
+            }
+            $environment = new Environment($config);
             $environment->addExtension(new CommonMarkCoreExtension());
             $environment->addExtension(new PreprocessorExtension());
             if ($this->toc) {
