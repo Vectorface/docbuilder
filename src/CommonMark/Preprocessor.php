@@ -63,7 +63,7 @@ class Preprocessor
     {
         $quotes = [mb_strpos($include, '"'), mb_strrpos($include, '"')];
         $args = array_map('trim', explode(",", mb_substr($include, $quotes[1] + 1)));
-        return $this->fetch(mb_substr($include, $quote[0] + 1, $quote[1] - $quote[0] - 1), $args);
+        return $this->fetch(mb_substr($include, $quotes[0] + 1, $quotes[1] - $quotes[0] - 1), $args);
     }
 
     /**
