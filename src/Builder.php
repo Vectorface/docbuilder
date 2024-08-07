@@ -139,7 +139,7 @@ class Builder
      */
     public function outputPDF($output)
     {
-        $mpdf = new Mpdf();
+        $mpdf = new Mpdf(['tempDir' => sys_get_temp_dir()]);
         $mpdf->WriteHTML("<!doctype html><html><head><style>".$this->css."</style></head><body>");
         $mpdf->WriteHTML($this->prepend);
         if ($this->header) {
